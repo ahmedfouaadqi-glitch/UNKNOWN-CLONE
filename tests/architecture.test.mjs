@@ -5,7 +5,7 @@ import { readFile } from "node:fs/promises";
 const root = new URL("../", import.meta.url);
 const packageJson = JSON.parse(await readFile(new URL("package.json", root), "utf8"));
 
-test("the active runtime is TanStack Start rather than Next.js", () => {
+test("the active runtime is TanStack Start rather than Next.js", async () => {
   assert.ok(packageJson.dependencies["@tanstack/react-start"]);
   assert.ok(packageJson.dependencies["@tanstack/react-router"]);
   assert.ok(packageJson.dependencies["@lovable.dev/vite-tanstack-config"]);
