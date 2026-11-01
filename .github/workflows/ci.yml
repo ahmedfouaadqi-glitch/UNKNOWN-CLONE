@@ -17,3 +17,20 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npm test
       - run: npm run build
+      - name: Smoke test the production server
+        run: |
+          node .output/server/index.mjs > /tmp/unknown-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 25); do
+            if curl -fsS http://127.0.0.1:3000/en -o /tmp/unknown-en.html; then
+              break
+            fi
+            sleep 1
+          done
+          grep -q "UNKNOWN" /tmp/unknown-en.html
+          curl -fsS http://127.0.0.1:3000/ar -o /tmp/unknown-ar.html
+          grep -q "غير معروف" /tmp/unknown-ar.html
+          API_STATUS=$(curl -sS -o /tmp/unknown-api.json -w "%{http_code}" http://127.0.0.1:3000/api/posts)
+          test "$API_STATUS" = "503"
+          grep -q "database_not_configured" /tmp/unknown-api.json
