@@ -3,6 +3,7 @@ import { copy, type Locale } from "@/lib/i18n";
 import { getLegalDocument, type LegalDocument } from "@/lib/legal";
 import { priorityJurisdictions, internationalReferences } from "@/lib/jurisdictions";
 import { operatorInfo } from "@/lib/operator";
+import { PublishForm } from "@/src/components/publish-form";
 import type { PostsPageResult, PublicPost } from "@/lib/content";
 
 type PostsData = PostsPageResult | null;
@@ -63,7 +64,7 @@ export function HomePage({ locale, posts }: { locale: Locale; posts: PublicPost[
   const ar = locale === "ar";
   return <div className="site-shell">
     <section className="hero"><div className="reveal"><span className="eyebrow">{text.heroEyebrow}</span><h1 className="hero-title">{text.heroTitleA} <em>{text.heroTitleB}</em></h1><p className="hero-copy">{text.heroCopy}</p><div className="country-note"><span aria-hidden="true">◎</span>{ar ? "مساحة متاحة للزيارة من مختلف أنحاء العالم" : "A space open to visitors around the world"}</div></div><div className="hero-art"><LetterArt/></div></section>
-    <section id="write" className="section" style={{borderTop:0,paddingTop:10}}><div className="section-heading"><div><h2 className="section-title">{text.writeTitle}</h2><p className="section-description">{ar ? "لا تحتاج إلى اسم كي تكتب حكايتك." : "You do not need a name to tell your story."}</p></div><span className="writer-note">{ar ? "مساحة مفتوحة للكلمات" : "A quiet space for words"}</span></div><WriterPanel locale={locale}/></section>
+    <section id="write" className="section" style={{borderTop:0,paddingTop:10}}><div className="section-heading"><div><h2 className="section-title">{text.writeTitle}</h2><p className="section-description">{ar ? "لا تحتاج إلى اسم كي تكتب حكايتك." : "You do not need a name to tell your story."}</p></div><span className="writer-note">{ar ? "مساحة مفتوحة للكلمات" : "A quiet space for words"}</span></div><PublishForm locale={locale} text={text} enabled={publishingReady}/></section>
     <section className="section"><div className="section-heading"><div><h2 className="section-title">{text.categoriesTitle}</h2><p className="section-description">{text.categoriesDescription}</p></div><a className="text-link" href={"/" + locale + "/categories"}>{text.viewAll} ↗</a></div><CategoryCards locale={locale}/></section>
     <section className="section"><div className="section-heading"><div><h2 className="section-title">{text.latestTitle}</h2><p className="section-description">{text.latestDescription}</p></div><a className="text-link" href={"/" + locale + "/latest"}>{text.viewAll} ↗</a></div><PostList posts={posts} locale={locale} emptyText={ar ? "لا توجد مشاركات محفوظة في قاعدة البيانات بعد." : "No stories are stored in the database yet."}/></section>
     <section className="section"><div className="section-heading"><div><h2 className="section-title">{ar ? "مساحة إنسانية، لا ملف شخصي" : "A human space, not a profile"}</h2><p className="section-description">{ar ? "لا متابعين ولا سباق شعبية. فقط كلمات وتجارب ومشاعر." : "No followers or popularity contest. Just words, experiences and feelings."}</p></div></div><div className="country-grid">
