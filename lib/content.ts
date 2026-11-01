@@ -1,4 +1,3 @@
-import "server-only";
 import type { Locale } from "@/lib/i18n";
 import { parseSearchTerm } from "@/lib/search.mjs";
 export { categories, categoryLabel } from "@/lib/categories";
