@@ -1,15 +1,21 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+const projectRoot = fileURLToPath(new URL(".", import.meta.url));
 const isLovableSandbox =
   process.env.LOVABLE_SANDBOX === "1" ||
   Boolean(process.env.DEV_SERVER__PROJECT_PATH);
 
 export default defineConfig({
-  // The custom server entry preserves the application's global request middleware.
   tanstackStart: {
     server: { entry: "server" }
   },
-  // In Lovable, keep the platform-selected deployment target.
-  // Outside Lovable, use Nitro's portable Node server for CI and local production builds.
-  ...(!isLovableSandbox ? { nitro: { preset: "node-server" } } : {})
+  ...(!isLovableSandbox ? { nitro: { preset: "node-server" } } : {}),
+  // Preserve the repository-root @/ alias used by the shared legacy domain modules
+  // and the new src/ application files.
+  vite: {
+    resolve: {
+      alias: { "@": projectRoot }
+    }
+  }
 });
