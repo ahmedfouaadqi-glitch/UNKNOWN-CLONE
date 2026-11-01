@@ -59,7 +59,7 @@ function WriterPanel({ locale }: { locale: Locale }) {
   </div>;
 }
 
-export function HomePage({ locale, posts }: { locale: Locale; posts: PublicPost[] }) {
+export function HomePage({ locale, posts, publishingReady }: { locale: Locale; posts: PublicPost[]; publishingReady: boolean }) {
   const text = copy[locale];
   const ar = locale === "ar";
   return <div className="site-shell">
