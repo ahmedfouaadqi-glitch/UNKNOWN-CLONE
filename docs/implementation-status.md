@@ -1,71 +1,62 @@
 # UNKNOWN — implementation status
 
 **Status date:** 1 November 2026  
-**Repository:** `ahmedfouaadqi-glitch/UNKNOWN`  
+**Repository:** `ahmedfouaadqi-glitch/UNKNOWN-CLONE`  
+**Runtime:** TanStack Start + React + TypeScript + Vite  
 **Default branch:** `main`
 
-This record separates repository implementation from functions verified against live external services.
+This document distinguishes code present in the repository from behaviour verified against live services.
 
-## Implemented in the repository
+## Framework migration
 
-- Next.js App Router application with Arabic and English routes.
-- Day/light mode as the default, with a user-selectable dark mode.
-- Country-aware locale defaults based on hosting edge headers; no GPS permission is requested.
-- Responsive layouts covering narrow phones, phones, tablets, laptops, desktop and wide desktop breakpoints.
-- Original vector identity and generated PNG app/Apple touch icons.
-- Published bilingual terms, privacy notice, anonymous publishing disclaimer and community rules; the temporary legal banner and obsolete edition labels have been removed.
-- Legal center with direct official-source links for Iraq, EU, UK, US, Canada, Australia, Brazil, India and Japan. Country pages distinguish binding laws, regulations, official guidance and consultation materials.
-- Declared operator/contact details are published in `lib/operator.ts` and displayed on the Contact page: Ahmed Maaroof, Baghdad, Iraq; email and telephone/WhatsApp as supplied by the operator.
-- Global website availability is the default. The publishing API and full-site proxy use separate explicit country blocklists, both empty by default. The separate UGC publishing feature remains disabled until explicitly enabled.
-- Country restriction rules support ISO alpha-2 codes, the EU-27 region token and an explicit global suspension token; unit tests cover the policy.
-- A documented verification process is provided for official restriction requests. The policy does not defer statutory duties that apply automatically.
-- Homepage, 14 story categories, latest feed, category feeds, story details and informational/legal pages.
-- Anonymous publishing form with terms/privacy/disclaimer consent and a self-declared age confirmation.
-- Server API code for posts, comments, reactions, reports and deletion-token validation.
-- Direct report links from stories and comments; target type and identifier are prefilled.
-- Comment deletion control using the contributor's one-time deletion token.
-- Locale switching preserves the current route; mobile and tablet navigation expose accessible states.
-- Keyboard skip link, focus-visible affordances and reduced-motion support.
-- Search page with Arabic/English text search and category filtering.
-- Paginated latest and category feeds, plus reusable pagination that retains search/category parameters.
-- Search normalization and validation shared by UI/data/API paths; Unicode and filter-sensitive input tests are included.
-- First-pass moderation checks selected compacted spacing/punctuation variants and removes Unicode format controls before rule checks. It remains a deterministic heuristic, not an AI classifier.
-- Preparation-only moderation workspace and appeals information pages are present and excluded from indexing. They show no fabricated cases and expose no operational controls.
+The active application has been rebuilt on TanStack Start:
+- Vite configuration uses the TanStack Start plugin, React plugin and Tailwind CSS Vite integration.
+- Application routes live under `src/routes`; the localized layout supports Arabic and English.
+- The root route provides the SSR document shell and metadata.
+- Server data reads use TanStack server functions in `src/lib/server-data.ts`.
+- API requests are exposed through a TanStack Start server route in `src/routes/api/$.ts`, which delegates to the existing validated service handlers.
+- The active React UI is under `src/components`.
+- The former Next.js files in `app/`, `components/`, `proxy.ts` and `next.config.ts` are retained as migration references only and excluded from the active TypeScript project.
 
-## CI verification
+## Implemented in the active application
 
-CI verifies dependency installation, TypeScript typecheck, Node unit tests and a Next.js production build for the commit under test. The corresponding GitHub Actions run is the source of truth for each commit.
+- Bilingual Arabic/English route structure, RTL/LTR wrapper, language switch and browser-language landing selection.
+- White/day theme by default, with a user-selectable dark theme persisted in browser storage.
+- Responsive navigation and the original UNKNOWN pencil-line brand assets.
+- Homepage, writing panel, category index, latest feed, category feeds, story details and search page.
+- About, terms, privacy, disclaimer, community, contact, legal center and jurisdiction-source pages.
+- Safety, moderation, reporting and appeals information pages.
+- Server-side data reads call the original Supabase-backed content functions; when the database is not configured, lists are empty rather than filled with fabricated content.
+- TanStack API route adapter retains original post, comment, reaction, report and deletion handlers. These retain input validation, rate limits, moderation decisions and deletion-token checks.
+- Original moderation and publishing-rule unit tests remain in place; architecture regression tests verify the active TanStack stack and launch defaults.
+- Operator details and verified contact channels are sourced from `lib/operator.ts`.
+- Public site access remains geographically open by default; the separate UGC publishing gate remains disabled by default.
 
-CI does not verify a deployed environment, live database, physical-device rendering, end-to-end data persistence, legal compliance, or operational moderation coverage.
+## Not yet verified / remaining work
 
-## Remaining work before public launch — independent of Supabase
+- The TanStack implementation has not yet been confirmed by a successful latest GitHub Actions production build. See the current workflow run linked from the repository Actions tab.
+- No live Supabase project is connected. Persistent posts, comments, reactions, reports, deletion and database-backed search have therefore not been end-to-end verified.
+- The current writing panel is deliberately disabled while `PUBLISHING_ENABLED=false`; it is not presented as an operational publishing service.
+- Report intake and appeals review are not a staffed operational workflow.
+- Moderator authentication, roles, MFA, protected case management, audit history and notifications are not implemented.
+- The migrated story view currently exposes reporting navigation but does not yet reintroduce the full interactive comments/reactions/deletion UI.
+- Browser-language detection at the root currently selects Arabic or English from `navigator.language`; country-aware server-side locale defaults still need implementation in the TanStack request context.
+- Manual testing on physical phones/tablets, browser accessibility audit, load testing and independent security testing remain outstanding.
+- Legal pages and official-source links do not certify legal compliance or regulator approval.
+- For Iraq, written CMC service classification and any applicable notification, registration or licensing steps remain prerequisites before enabling production UGC publishing.
 
-1. Implement server-side moderator authentication, least-privilege roles, MFA and protected case access.
-2. Implement real report triage, case state transitions, evidence handling, decision audit log and moderator notifications.
-3. Implement the appeal submission/review/notice lifecycle. The current appeals page explains the intended process but does not accept or store appeals.
-4. Extend multilingual and Iraqi dialect moderation, adversarial evasion tests and child-safety procedures; establish a staffed escalation operation.
-5. Obtain operator-specific legal determinations and any required regulator classification, notification, registration or licence. For Iraq, written CMC service classification is a gate before enabling production UGC publishing; Articles 4–6 of the published framework address scope, regulatory tools and UGC obligations.
-6. Supply the full registered/service address where required, production domain, actual infrastructure-provider list and retention schedule.
-7. Configure hosting, staging/production separation, CDN/WAF controls, distributed rate limiting, monitoring, alerting and backup/restore drills.
-8. Run manual browser and physical-device QA, accessibility audit, load testing and independent security testing.
-9. End-to-end verify publishing, comments, reactions, reports, deletion, search and pagination after persistent storage is connected.
-
-## Supabase — deliberately deferred to the final stage
-
-At the user's direction, Supabase provisioning and connection are postponed until the other feasible work is complete. The repository contains an initial server-only client and migration, but:
+## Supabase — deliberately deferred
 
 - No dedicated UNKNOWN Supabase project has been provisioned.
-- The migration has not been applied to a live project.
+- The SQL migration has not been applied to a live project.
 - RLS, grants and service-role access have not been tested against a live database.
-- Posts, comments, reactions, reports, deletion, search and pagination have not been verified against persistent storage.
-- Moderator case management and appeals cannot become operational before their storage and authentication boundaries are implemented and verified.
+- The service-role key must stay server-side and must never be exposed via a `VITE_*` variable.
+- Do not reuse an unrelated Supabase project.
 
-Final Supabase stage: confirm project cost and region; provision a dedicated project; apply and audit the migration; verify RLS, grants and sequences; configure server-only secrets; add the required case and appeal persistence; test each data flow end to end; then test backups and restore. Do not reuse an unrelated project.
+## Geographic and publishing defaults
 
-## Geographic availability defaults
-
-- `PUBLISHING_ENABLED=true`
+- `PUBLISHING_ENABLED=false`
 - `PUBLISHING_BLOCKED_COUNTRIES=` (empty by default)
 - `SITE_BLOCKED_COUNTRIES=` (empty by default)
 
-The first list blocks new submissions only; the second blocks all site paths. Add a jurisdiction only after a documented assessment of a valid legal basis and the exact scope of the measure. A successful CI run is not a public launch approval.
+Global website availability is distinct from acceptance and persistence of user-generated content. Directly applicable legal duties remain in force regardless of whether an authority has sent a notice.
