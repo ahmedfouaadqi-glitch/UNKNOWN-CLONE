@@ -22,15 +22,30 @@ jobs:
           node .output/server/index.mjs > /tmp/unknown-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          READY=0
           for attempt in $(seq 1 25); do
-            if curl -fsS http://127.0.0.1:3000/en -o /tmp/unknown-en.html; then
+            STATUS=$(curl -sS -o /tmp/unknown-en.html -w "%{http_code}" http://127.0.0.1:3000/en || true)
+            if [ "$STATUS" = "200" ]; then
+              READY=1
               break
             fi
             sleep 1
           done
-          grep -q "UNKNOWN" /tmp/unknown-en.html
-          curl -fsS http://127.0.0.1:3000/ar -o /tmp/unknown-ar.html
-          grep -q "غير معروف" /tmp/unknown-ar.html
+          if [ "$READY" != "1" ]; then
+            echo "English SSR failed with HTTP ${STATUS}"
+            cat /tmp/unknown-server.log
+            cat /tmp/unknown-en.html || true
+            exit 1
+          fi
+          grep -q "UNKNOWN" /tmp/unknown-en.html || { cat /tmp/unknown-en.html; exit 1; }
+          AR_STATUS=$(curl -sS -o /tmp/unknown-ar.html -w "%{http_code}" http://127.0.0.1:3000/ar || true)
+          if [ "$AR_STATUS" != "200" ]; then
+            echo "Arabic SSR failed with HTTP ${AR_STATUS}"
+            cat /tmp/unknown-server.log
+            cat /tmp/unknown-ar.html || true
+            exit 1
+          fi
+          grep -q "غير معروف" /tmp/unknown-ar.html || { cat /tmp/unknown-ar.html; exit 1; }
           API_STATUS=$(curl -sS -o /tmp/unknown-api.json -w "%{http_code}" http://127.0.0.1:3000/api/posts)
-          test "$API_STATUS" = "503"
-          grep -q "database_not_configured" /tmp/unknown-api.json
+          test "$API_STATUS" = "503" || { cat /tmp/unknown-api.json; cat /tmp/unknown-server.log; exit 1; }
+          grep -q "database_not_configured" /tmp/unknown-api.json || { cat /tmp/unknown-api.json; exit 1; }
