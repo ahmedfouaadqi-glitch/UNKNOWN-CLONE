@@ -39,7 +39,7 @@ The active application has been rebuilt on TanStack Start:
 - The current writing panel is deliberately disabled while `PUBLISHING_ENABLED=false`; it is not presented as an operational publishing service.
 - Report intake and appeals review are not a staffed operational workflow.
 - Moderator authentication, roles, MFA, protected case management, audit history and notifications are not implemented.
-- The migrated story view currently exposes reporting navigation but does not yet reintroduce the full interactive comments/reactions/deletion UI.
+- The active story view includes anonymous comments, three reaction types, deletion-by-private-code and reporting UI. Server handlers are connected; storage-dependent actions are disabled at the UI when no database is configured, and publishing/reactions/comments remain feature-gated.
 - Browser-language detection at the root currently selects Arabic or English from `navigator.language`; country-aware server-side locale defaults still need implementation in the TanStack request context.
 - Manual testing on physical phones/tablets, browser accessibility audit, load testing and independent security testing remain outstanding.
 - Legal pages and official-source links do not certify legal compliance or regulator approval.
