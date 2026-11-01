@@ -8,8 +8,12 @@ const packageJson = JSON.parse(await readFile(new URL("package.json", root), "ut
 test("the active runtime is TanStack Start rather than Next.js", () => {
   assert.ok(packageJson.dependencies["@tanstack/react-start"]);
   assert.ok(packageJson.dependencies["@tanstack/react-router"]);
+  assert.ok(packageJson.dependencies["@lovable.dev/vite-tanstack-config"]);
+  assert.ok(packageJson.dependencies.nitro);
   assert.equal(packageJson.dependencies.next, undefined);
   assert.equal(packageJson.scripts.dev, "vite dev");
+  const viteConfig = await readFile(new URL("vite.config.ts", root), "utf8");
+  assert.match(viteConfig, /@lovable\\.dev\\/vite-tanstack-config/);
 });
 
 test("build runs Vite and TypeScript validation", () => {
