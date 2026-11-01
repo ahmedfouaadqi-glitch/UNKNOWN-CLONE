@@ -1,5 +1,11 @@
 import type { ReactNode } from "react";
-import { Outlet, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import {
+  Outlet,
+  createRootRoute,
+  HeadContent,
+  Scripts,
+  useRouterState
+} from "@tanstack/react-router";
 import "../styles.css";
 
 export const Route = createRootRoute({
@@ -20,9 +26,14 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
-  return <RootDocument><Outlet /></RootDocument>;
+  const pathname = useRouterState({ select: state => state.location.pathname });
+  const locale = pathname.startsWith("/ar") ? "ar" : "en";
+  return <RootDocument locale={locale}><Outlet /></RootDocument>;
 }
 
-function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
-  return <html lang="en"><head><HeadContent /></head><body>{children}<Scripts /></body></html>;
+function RootDocument({ children, locale }: Readonly<{ children: ReactNode; locale: "ar" | "en" }>) {
+  return <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
+    <head><HeadContent /></head>
+    <body>{children}<Scripts /></body>
+  </html>;
 }
