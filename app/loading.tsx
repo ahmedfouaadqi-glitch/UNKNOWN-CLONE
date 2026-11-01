@@ -1,0 +1,1 @@
+export default function Loading(){return <main className="site-shell"><div className="page-intro"><span className="eyebrow">UNKNOWN</span><h1 className="page-title">…</h1><p className="section-description">Loading the page.</p></div></main>;}
