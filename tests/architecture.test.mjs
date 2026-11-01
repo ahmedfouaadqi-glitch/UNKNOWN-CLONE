@@ -13,7 +13,7 @@ test("the active runtime is TanStack Start rather than Next.js", async () => {
   assert.equal(packageJson.dependencies.next, undefined);
   assert.equal(packageJson.scripts.dev, "vite dev");
   const viteConfig = await readFile(new URL("vite.config.ts", root), "utf8");
-  assert.match(viteConfig, /@lovable\\.dev\\/vite-tanstack-config/);
+  assert.ok(viteConfig.includes("@lovable.dev/vite-tanstack-config"));
 });
 
 test("build runs Vite and TypeScript validation", () => {
