@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getFeatureStatus, getPostById, getPosts } from "@/src/lib/server-data";
-import { ContentPage } from "@/src/components/pages";
+import { ContentPageWithInteractions } from "@/src/components/content-page-with-interactions";
 
 export const Route = createFileRoute("/$locale/$")({
   loader: async ({ params, location }) => {
@@ -34,5 +34,5 @@ export const Route = createFileRoute("/$locale/$")({
 function ContentRoute() {
   const { locale } = Route.useParams();
   const data = Route.useLoaderData();
-  return <ContentPage locale={locale === "ar" ? "ar" : "en"} {...data} />;
+  return <ContentPageWithInteractions locale={locale === "ar" ? "ar" : "en"} {...data} />;
 }
