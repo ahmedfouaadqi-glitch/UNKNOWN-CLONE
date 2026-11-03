@@ -7,8 +7,8 @@ export const runtime = "nodejs";
 const reasons = new Set(["bullying","threat","personal_data","defamation","hate","child_safety","illegal","other"]);
 
 export async function POST(request: Request) {
-  const rate = checkRateLimit(request, "reports", 5, 60 * 60_000);
-  if (!rate.allowed) return json({ error: "Report rate limit reached." }, 429);
+  const rate = await checkRateLimit(request, "reports", 5, 60 * 60_000);
+  if (!rate.allowed) return json({ error: rate.reason === "rate_limited" ? "Report rate limit reached." : "Reporting rate limit is temporarily unavailable." }, rate.reason === "rate_limited" ? 429 : 503);
   const input = parseJson(await request.json().catch(() => null));
   if (!input || (input.targetType !== "post" && input.targetType !== "comment") ||
       typeof input.targetId !== "string" || !/^[0-9a-f-]{36}$/i.test(input.targetId) ||
