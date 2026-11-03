@@ -23,7 +23,34 @@ function LetterArt() {
 }
 
 function PageHeading({ title, intro, locale }: { title: string; intro?: string; locale: Locale }) {
-  return <header className="page-heading"><p className="eyebrow">UNKNOWN · {locale === "ar" ? "غير معروف" : "Anonymous expression"}</p><h1 className="section-title">{title}</h1>{intro && <p className="section-description">{intro}</p>}</header>;
+  const ar = locale === "ar";
+  return <header className="page-heading">
+    <p className="eyebrow">UNKNOWN · {ar ? "غير معروف" : "Anonymous expression"}</p>
+    <div className="page-heading-row">
+      <h1 className="section-title">{title}</h1>
+      <a
+        className="page-back-button"
+        href={"/" + locale}
+        dir={ar ? "rtl" : "ltr"}
+        aria-label={ar ? "رجوع إلى الصفحة السابقة" : "Go back to the previous page"}
+        onClick={(event) => {
+          try {
+            const referrer = document.referrer;
+            if (referrer && new URL(referrer).origin === window.location.origin) {
+              event.preventDefault();
+              window.history.back();
+            }
+          } catch {
+            // Keep the localized home link as a safe fallback.
+          }
+        }}
+      >
+        <span aria-hidden="true">{ar ? "→" : "←"}</span>
+        <span>{ar ? "رجوع" : "Back"}</span>
+      </a>
+    </div>
+    {intro && <p className="section-description">{intro}</p>}
+  </header>;
 }
 
 function CategoryCards({ locale }: { locale: Locale }) {
@@ -101,7 +128,7 @@ function StoryPage({ locale, post }: { locale: Locale; post: PublicPost|null }) 
   const ar=locale==="ar";
   if(!post)return <div className="site-shell inner-page"><div className="empty-state"><strong>{ar?"تعذّر العثور على الحكاية.":"Story not found."}</strong><a className="text-link" href={"/"+locale+"/latest"}>{ar?"العودة إلى المشاركات":"Browse latest stories"}</a></div></div>;
   const date=new Intl.DateTimeFormat(locale,{dateStyle:"long"}).format(new Date(post.published_at));
-  return <div className="site-shell inner-page"><article className="story-detail"><div className="post-meta"><span className="post-category">{categoryLabel(post.category,locale)}</span><time dateTime={post.published_at}>{date}</time></div><h1 className="hero-title">{post.title||(ar?"مشاركة دون عنوان":"Untitled story")}</h1><div className="story-body">{post.body}</div><div className="story-actions"><a className="secondary-button" href={"/"+locale+"/report"}>{ar?"الإبلاغ عن المحتوى":"Report this content"}</a></div><div className="notice-box">{ar?"التعليقات والتفاعلات ستظهر عند تفعيل خدمات التخزين والمراجعة.":"Comments and reactions will be available when storage and moderation are enabled."}</div></article></div>;
+  return <div className="site-shell inner-page"><article className="story-detail"><div className="post-meta"><span className="post-category">{categoryLabel(post.category,locale)}</span><time dateTime={post.published_at}>{date}</time></div><div className="story-title-row"><h1 className="hero-title">{post.title||(ar?"مشاركة دون عنوان":"Untitled story")}</h1><a className="page-back-button" href={"/"+locale} dir={ar?"rtl":"ltr"} aria-label={ar?"رجوع إلى الصفحة السابقة":"Go back to the previous page"} onClick={(event)=>{try{const referrer=document.referrer;if(referrer&&new URL(referrer).origin===window.location.origin){event.preventDefault();window.history.back();}}catch{/* localized home fallback */}}}><span aria-hidden="true">{ar?"→":"←"}</span><span>{ar?"رجوع":"Back"}</span></a></div><div className="story-body">{post.body}</div><div className="story-actions"><a className="secondary-button" href={"/"+locale+"/report"}>{ar?"الإبلاغ عن المحتوى":"Report this content"}</a></div><div className="notice-box">{ar?"التعليقات والتفاعلات ستظهر عند تفعيل خدمات التخزين والمراجعة.":"Comments and reactions will be available when storage and moderation are enabled."}</div></article></div>;
 }
 
 function LegalIndex({ locale, countryCode }: { locale: Locale; countryCode?: string }) {

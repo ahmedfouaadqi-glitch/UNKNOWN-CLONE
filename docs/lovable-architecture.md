@@ -33,3 +33,10 @@ npm run dev
 npm test
 npm run build
 ```
+
+
+## Updates synchronized from the Next.js source (2026-11-03)
+- Added a localized in-page Back control beside headings and story titles. It uses same-origin history when available and falls back to the localized home route.
+- Rate-limit keying now accepts only a syntactically valid `CF-Connecting-IP`; caller-controlled `X-Forwarded-For` and `X-Real-IP` are ignored.
+- The rate limiter remains process-local in this Lovable port. Do not treat this as distributed protection; implement a shared atomic store and platform edge controls before enabling public submissions at scale.
+- Source-only Next.js admin/OAuth/TOTP and Supabase migration changes were not copied into the active TanStack app. They require a separate Lovable-compatible port and explicit database compatibility review.
