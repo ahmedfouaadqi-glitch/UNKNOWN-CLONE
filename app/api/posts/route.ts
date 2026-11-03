@@ -45,8 +45,8 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const gate = canPublish(request.headers);
   if (!gate.allowed) return json({ error: "Publishing is not enabled for this market.", code: "market_disabled" }, 403);
-  const rate = checkRateLimit(request, "posts", 3, 60_000);
-  if (!rate.allowed) return json({ error: "Too many submissions. Please try again later.", code: "rate_limited" }, 429);
+  const rate = await checkRateLimit(request, "posts", 3, 60_000);
+  if (!rate.allowed) return json({ error: rate.reason === "rate_limited" ? "Too many submissions. Please try again later." : "Rate limiting is temporarily unavailable.", code: rate.reason }, rate.reason === "rate_limited" ? 429 : 503);
   const body = parseJson(await request.json().catch(() => null));
   if (!body) return json({ error: "Invalid request." }, 400);
   const title = typeof body.title === "string" ? body.title.normalize("NFKC").trim().slice(0, 100) : "";
