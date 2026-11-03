@@ -12,6 +12,8 @@ export type ContentPageProps = {
   posts: PostsPageResult | null;
   post: PublicPost | null;
   query: string;
+  category?: string;
+  invalidCategory?: boolean;
   features: PageFeatures;
   targetType?: "post" | "comment";
   targetId?: string;
