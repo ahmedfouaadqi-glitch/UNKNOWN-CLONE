@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getFeatureStatus, getPostById, getPosts } from "@/src/lib/server-data";
 import { ContentPageWithInteractions } from "@/src/components/content-page-with-interactions";
+import { categories } from "@/lib/categories";
 
 export const Route = createFileRoute("/$locale/$")({
   loader: async ({ params, location }) => {
@@ -23,8 +24,14 @@ export const Route = createFileRoute("/$locale/$")({
       return { path, post: null, posts: await getPosts({ data: { page, pageSize: 12, category: parts[1] } }), query: "", features, targetType, targetId };
     }
     if (parts[0] === "search") {
-      const query = queryParams.get("q") || "";
-      return { path, post: null, posts: query.trim() ? await getPosts({ data: { page, pageSize: 12, query } }) : null, query, features, targetType, targetId };
+      const query = (queryParams.get("q") || "").trim().replace(/\\s+/gu, " ");
+      const requestedCategory = queryParams.get("category") || "";
+      const category = categories.some((item) => item.id === requestedCategory) ? requestedCategory : "";
+      const invalidCategory = Boolean(requestedCategory && !category);
+      const posts = query.length >= 2 || (category && !query)
+        ? await getPosts({ data: { page, pageSize: 12, query: query || undefined, category: category || undefined } })
+        : null;
+      return { path, post: null, posts, query, category, invalidCategory, features, targetType, targetId };
     }
     return { path, post: null, posts: null, query: "", features, targetType, targetId };
   },
