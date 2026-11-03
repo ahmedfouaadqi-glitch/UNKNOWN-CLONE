@@ -93,3 +93,16 @@ Production migrations, public publishing, payment collection, Next.js runtime/co
 - [x] Add contract tests for robots, sitemap and canonical origin behavior.
 - [ ] Verify both endpoints through deployed Lovable hosting and set SITE_URL to the final canonical domain.
 - [ ] Add dynamic sitemap entries for individual public posts only if their public indexing policy is approved.
+
+
+## Admin console migration — implementation checkpoint (2026-11-03)
+- [x] Ported admin session primitives to a TanStack-compatible server module (`lib/admin-auth.server.ts`); removed Next.js cookies/runtime dependencies.
+- [x] Added server handlers for Manus OAuth start/callback, session inspection, logout/revocation, TOTP enrollment/verification, and moderation queue actions (`lib/admin-api.server.ts`).
+- [x] Added explicit API dispatch for the seven admin endpoints in `src/routes/api/$.ts`.
+- [x] Ported the Arabic admin moderation UI and styles to `src/components/admin/`; added explicit `/admin` route with noindex metadata.
+- [x] Added static contract tests for route coverage, allowlist/origin checks, session revocation, TOTP rate limiting/replay protection, audit logging and no publishing action.
+- [ ] Apply and verify the existing UNKNOWN isolated admin schema migration in a dedicated Supabase staging project; not applied by this change.
+- [ ] Configure deployment secrets: `MANUS_PROJECT_ID`, `MANUS_JWT_SECRET` (or `JWT_SECRET`), `ADMIN_EMAIL_ALLOWLIST`, `MANUS_OAUTH_PORTAL_URL`, `MANUS_OAUTH_API_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and canonical `SITE_URL` / `ADMIN_ALLOWED_ORIGINS`.
+- [ ] Verify OAuth callback against the deployed Lovable domain and run a real TOTP enrollment/login/logout/revocation flow.
+- [ ] Verify RLS/grants/function execute privileges in staging before any production rollout.
+- [ ] Fix the deferred `server-only` smoke test independently; do not mask the failure.
