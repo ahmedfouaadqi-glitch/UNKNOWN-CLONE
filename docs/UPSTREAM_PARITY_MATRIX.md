@@ -2,7 +2,7 @@
 
 **Source commit:** 69b6f8e141419defb74ff8ce7fd0e3274c0977ef  
 **Target baseline before migration:** 848afa1c514e1a6ff462496d699959e039df2a43  
-**Target current checkpoint:** 144ccc729584a658e8e355335adb066b56ec8f48
+**Target current checkpoint:** 6a2098e517bda73a741bb4109af90776cbc06c00
 
 Legend: **PORTED** = adapted in active TanStack app; **PARTIAL** = only selected behavior or styling is present; **PENDING** = not yet translated/verified; **REFERENCE ONLY** = source framework configuration should not become active target configuration; **REVIEW REQUIRED** = requires security/schema/hosting validation.
 
@@ -88,3 +88,11 @@ Not yet verified:
 - Search parity improved: normalized whitespace, allowlisted category filter, invalid-category handling, category-only search and category-preserving pagination.
 - Added `tests/search-route-contract.test.mjs`.
 - Not yet complete: page-specific content parity, detailed country legal page parity, sitemap/robots parity and SSR route smoke coverage.
+
+
+## SEO route parity update (2026-11-03)
+- Added server handlers for `/robots.txt` and `/sitemap.xml` using TanStack Start.
+- The sitemap covers the source's 12 public static routes for both `ar` and `en`; admin/API endpoints are not listed.
+- Canonical host uses validated `SITE_URL` (or `NEXT_PUBLIC_SITE_URL` compatibility fallback); invalid values fall back to the upstream default.
+- Added `tests/seo-routes-contract.test.mjs` and `tests/site-url.test.mjs`.
+- Deployment verification and canonical domain configuration remain pending.
