@@ -1,7 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AdminPanel } from "@/src/components/admin/admin-panel";
+import styles from "@/src/components/admin/admin-panel.module.css";
 
 export const Route = createFileRoute("/admin")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    auth: typeof search.auth === "string" ? search.auth : undefined
+  }),
   head: () => ({
     meta: [
       { title: "إدارة UNKNOWN" },
@@ -13,7 +17,6 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminPage() {
-  const search = typeof window === "undefined" ? "" : window.location.search;
-  const authCode = new URLSearchParams(search).get("auth") || undefined;
-  return <div className="admin-page" dir="rtl" lang="ar"><AdminPanel authCode={authCode} /></div>;
+  const { auth } = Route.useSearch();
+  return <div className={styles.page} dir="rtl" lang="ar"><AdminPanel authCode={auth} /></div>;
 }
