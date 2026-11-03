@@ -26,8 +26,8 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   if (!/^[0-9a-f-]{36}$/i.test(postId)) return json({ error: "Invalid story." }, 400);
   const gate = canPublish(request.headers);
   if (!gate.allowed) return json({ error: "Publishing is not enabled for this market.", code: "market_disabled" }, 403);
-  const rate = checkRateLimit(request, "comments", 8, 60_000);
-  if (!rate.allowed) return json({ error: "Too many comments. Please try again later." }, 429);
+  const rate = await checkRateLimit(request, "comments", 8, 60_000);
+  if (!rate.allowed) return json({ error: rate.reason === "rate_limited" ? "Too many comments. Please try again later." : "Comment rate limiting is temporarily unavailable." }, rate.reason === "rate_limited" ? 429 : 503);
   const input = parseJson(await request.json().catch(() => null));
   if (!input) return json({ error: "Invalid request." }, 400);
   const text = cleanText(input.body, 1500);
