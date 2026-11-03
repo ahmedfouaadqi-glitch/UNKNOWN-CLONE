@@ -84,3 +84,12 @@ Production migrations, public publishing, payment collection, Next.js runtime/co
 - [x] Add route contract tests for search/category behavior.
 - [ ] Complete parity review of page-specific copy and legal jurisdiction details.
 - [ ] Add route-level SSR smoke coverage for every public localized route after the deferred server-only runtime issue is resolved.
+
+
+## SEO route implementation — 2026-11-03
+- [x] Add TanStack server route for `/robots.txt` with localized public allow rules and private API/admin disallow rules.
+- [x] Add TanStack server route for `/sitemap.xml` covering the source sitemap's 12 public route families in Arabic and English.
+- [x] Resolve canonical origin from `SITE_URL` or existing `NEXT_PUBLIC_SITE_URL`, validate HTTP(S), and safely fall back to the source default.
+- [x] Add contract tests for robots, sitemap and canonical origin behavior.
+- [ ] Verify both endpoints through deployed Lovable hosting and set SITE_URL to the final canonical domain.
+- [ ] Add dynamic sitemap entries for individual public posts only if their public indexing policy is approved.
