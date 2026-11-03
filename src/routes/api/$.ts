@@ -1,15 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import * as posts from "@/app/api/posts/route";
-import * as comments from "@/app/api/posts/[id]/comments/route";
-import * as reactions from "@/app/api/posts/[id]/reactions/route";
-import * as reports from "@/app/api/reports/route";
-import * as deletion from "@/app/api/delete/route";
 
 async function dispatch(request: Request): Promise<Response> {
   const pathname = new URL(request.url).pathname.replace(/\/+$/, "") || "/";
   const method = request.method.toUpperCase();
 
+  // Load legacy handler modules only inside the server request boundary.
+  // Static imports here leaked server-only dependencies into the client SSR graph.
   if (pathname === "/api/posts") {
+    const posts = await import("@/app/api/posts/route");
     if (method === "GET") return posts.GET(request);
     if (method === "POST") return posts.POST(request);
   }
@@ -19,17 +17,25 @@ async function dispatch(request: Request): Promise<Response> {
     const [, id, kind] = interaction;
     const context = { params: Promise.resolve({ id }) };
     if (kind === "comments") {
+      const comments = await import("@/app/api/posts/[id]/comments/route");
       if (method === "GET") return comments.GET(request, context);
       if (method === "POST") return comments.POST(request, context);
     }
     if (kind === "reactions") {
+      const reactions = await import("@/app/api/posts/[id]/reactions/route");
       if (method === "GET") return reactions.GET(request, context);
       if (method === "POST") return reactions.POST(request, context);
     }
   }
 
-  if (pathname === "/api/reports" && method === "POST") return reports.POST(request);
-  if (pathname === "/api/delete" && method === "POST") return deletion.POST(request);
+  if (pathname === "/api/reports" && method === "POST") {
+    const reports = await import("@/app/api/reports/route");
+    return reports.POST(request);
+  }
+  if (pathname === "/api/delete" && method === "POST") {
+    const deletion = await import("@/app/api/delete/route");
+    return deletion.POST(request);
+  }
   return Response.json({ error: "API route not found." }, { status: 404 });
 }
 
