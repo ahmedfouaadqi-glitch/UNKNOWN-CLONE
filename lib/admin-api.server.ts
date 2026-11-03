@@ -54,8 +54,14 @@ export async function adminAuthCallback(request: Request) {
   try { callback = new URL(state.redirectUri); } catch { return new Response("Invalid callback origin.",{status:400}); }
   if (!isAllowedAdminOrigin(callback.origin) || state.redirectUri !== `${callback.origin}/api/admin/auth/callback`) return new Response("Callback origin is not permitted.",{status:400});
   const redirect = (codeValue: string) => Response.redirect(new URL(`/admin?auth=${encodeURIComponent(codeValue)}`,callback.origin),302);
-  const apiBase = process.env.MANUS_OAUTH_API_URL, appId = process.env.MANUS_PROJECT_ID;
-  if (!apiBase || !appId) return redirect("login-unavailable");
+  const configuredApiBase = process.env.MANUS_OAUTH_API_URL, appId = process.env.MANUS_PROJECT_ID;
+  if (!configuredApiBase || !appId) return redirect("login-unavailable");
+  let apiBase: string;
+  try {
+    const parsedApiBase = new URL(configuredApiBase);
+    if (parsedApiBase.protocol !== "https:") return redirect("login-unavailable");
+    apiBase = parsedApiBase.origin;
+  } catch { return redirect("login-unavailable"); }
   try {
     const exchange = await fetch(`${apiBase.replace(/\/$/,"")}/webdev.v1.WebDevAuthPublicService/ExchangeToken`,{
       method:"POST",headers:{"Content-Type":"application/json"},cache:"no-store",signal:AbortSignal.timeout(15000),
