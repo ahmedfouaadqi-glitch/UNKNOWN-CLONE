@@ -24,7 +24,7 @@ export const Route = createFileRoute("/$locale/$")({
       return { path, post: null, posts: await getPosts({ data: { page, pageSize: 12, category: parts[1] } }), query: "", features, targetType, targetId };
     }
     if (parts[0] === "search") {
-      const query = (queryParams.get("q") || "").trim().replace(/\\s+/gu, " ");
+      const query = (queryParams.get("q") || "").trim().replace(/\s+/gu, " ");
       const requestedCategory = queryParams.get("category") || "";
       const category = categories.some((item) => item.id === requestedCategory) ? requestedCategory : "";
       const invalidCategory = Boolean(requestedCategory && !category);
