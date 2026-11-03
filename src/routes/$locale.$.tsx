@@ -28,7 +28,7 @@ export const Route = createFileRoute("/$locale/$")({
       const requestedCategory = queryParams.get("category") || "";
       const category = categories.some((item) => item.id === requestedCategory) ? requestedCategory : "";
       const invalidCategory = Boolean(requestedCategory && !category);
-      const posts = query.length >= 2 || (category && !query)
+      const posts = !invalidCategory && (query.length >= 2 || (category && !query))
         ? await getPosts({ data: { page, pageSize: 12, query: query || undefined, category: category || undefined } })
         : null;
       return { path, post: null, posts, query, category, invalidCategory, features, targetType, targetId };
