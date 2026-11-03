@@ -76,3 +76,11 @@ Exit: every upstream file is classified as port, translate, reference-only, defe
 
 ## Not approved here
 Production migrations, public publishing, payment collection, Next.js runtime/config replacement, or claims of production readiness without successful tests and staging verification.
+
+
+## Route parity update — 2026-11-03
+- [x] Preserve the localized TanStack catch-all route for source public pages (about, appeals, categories, community, contact, disclaimer, latest, legal, moderation, post detail, privacy, report, safety, search and terms).
+- [x] Add search category filtering with an allowlisted category ID, normalized whitespace, invalid-category feedback and category-preserving pagination.
+- [x] Add route contract tests for search/category behavior.
+- [ ] Complete parity review of page-specific copy and legal jurisdiction details.
+- [ ] Add route-level SSR smoke coverage for every public localized route after the deferred server-only runtime issue is resolved.
