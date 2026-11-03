@@ -6,6 +6,35 @@ async function dispatch(request: Request): Promise<Response> {
 
   // Load legacy handler modules only inside the server request boundary.
   // Static imports here leaked server-only dependencies into the client SSR graph.
+  if (pathname === "/api/admin/session" && method === "GET") {
+    const admin = await import("@/lib/admin-api.server");
+    return admin.adminSession(request);
+  }
+  if (pathname === "/api/admin/auth/start" && method === "POST") {
+    const admin = await import("@/lib/admin-api.server");
+    return admin.adminAuthStart(request);
+  }
+  if (pathname === "/api/admin/auth/callback" && method === "GET") {
+    const admin = await import("@/lib/admin-api.server");
+    return admin.adminAuthCallback(request);
+  }
+  if (pathname === "/api/admin/logout" && method === "POST") {
+    const admin = await import("@/lib/admin-api.server");
+    return admin.adminLogout(request);
+  }
+  if (pathname === "/api/admin/mfa/setup" && method === "POST") {
+    const admin = await import("@/lib/admin-api.server");
+    return admin.adminMfaSetup(request);
+  }
+  if (pathname === "/api/admin/mfa/verify" && method === "POST") {
+    const admin = await import("@/lib/admin-api.server");
+    return admin.adminMfaVerify(request);
+  }
+  if (pathname === "/api/admin/queue" && (method === "GET" || method === "POST")) {
+    const admin = await import("@/lib/admin-api.server");
+    return admin.adminQueue(request);
+  }
+
   if (pathname === "/api/posts") {
     const posts = await import("@/app/api/posts/route");
     if (method === "GET") return posts.GET(request);
