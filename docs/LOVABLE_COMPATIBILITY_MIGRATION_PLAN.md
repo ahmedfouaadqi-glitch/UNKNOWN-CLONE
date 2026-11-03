@@ -25,20 +25,22 @@ Exit: every upstream file is classified as port, translate, reference-only, defe
 - [ ] Test keyboard, mobile, reduced motion, first visit and replay.
 
 ## Phase 2 — APIs and data
-- [ ] Compare all source API routes with TanStack adapters.
-- [ ] Port post, comment, reaction, report and delete behavior while preserving validation, status codes, rate limits and deletion tokens.
-- [ ] Change table names only after target schema is verified.
-- [ ] Add API contract tests.
+- [x] Compare source API routes with target adapters; preserve target schema names (posts/comments/reactions/reports) because the checked-in target init migration defines them.
+- [x] Make post, comment, reaction, report and delete handlers await rate-limit decisions and distinguish 429 from limiter-unavailable 503.
+- [x] Add a shared atomic Supabase rate-limit table/function migration; not applied to any database.
+- [ ] Complete API contract tests and verify RPC behavior/concurrency in disposable staging.
 
 ## Phase 3 — Rate limits and security
 - [x] Ignore caller-controlled forwarded IP headers.
 - [ ] Verify host proxy headers and fallback behavior.
-- [ ] Implement an atomic shared limiter before scaling public submissions.
+- [x] Implement atomic shared limiter in code and add a staging migration (20261103020000_public_rate_limits.sql).
+- [ ] Apply and verify the limiter migration in disposable staging; production remains untouched.
 - [ ] Review CSRF/origin protections and security headers.
 - [ ] Test concurrency, expiry and bypass attempts.
 
 ## Phase 4 — Supabase
-- [ ] Compare upstream migration with the actual target schema.
+- [x] Compare the target init migration with the upstream init migration; they are byte-identical and define the legacy table names (posts/comments/reactions/reports).
+- [ ] Compare upstream isolated-admin migration with the actual target schema.
 - [ ] Verify tables, indexes, constraints, triggers, functions, RLS and grants.
 - [ ] Review migration idempotency and rollback.
 - [ ] Test in disposable staging; do not assume Git means migration is applied.
