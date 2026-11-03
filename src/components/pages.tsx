@@ -124,7 +124,7 @@ function SearchPage({ locale, query, posts, category = "", invalidCategory = fal
     </form>
     {invalidCategory && <div className="empty-state">{ar?"التصنيف المحدد غير صالح. اختر تصنيفاً من القائمة.":"The selected category is invalid. Choose a category from the list."}</div>}
     {query.length === 1 && <div className="empty-state">{ar?"استخدم حرفين على الأقل للبحث.":"Use at least two characters to search."}</div>}
-    {query&&<section className="section"><div className="section-heading"><h2 className="section-title">{ar?"نتائج البحث":"Search results"}</h2><span className="writer-note">{posts?.total||0} {ar?"نتيجة":"results"}</span></div><PostList posts={posts?.posts||[]} locale={locale} emptyText={ar?"لم نعثر على مشاركات مطابقة أو أن قاعدة البيانات غير متصلة.":"No matching stories were found, or the database is not connected."}/></section>}
+    {(query || category) && !invalidCategory && query.length !== 1 && <section className="section"><div className="section-heading"><h2 className="section-title">{ar?"نتائج البحث":"Search results"}</h2><span className="writer-note">{posts?.total||0} {ar?"نتيجة":"results"}</span></div><PostList posts={posts?.posts||[]} locale={locale} emptyText={ar?"لم نعثر على مشاركات مطابقة أو أن قاعدة البيانات غير متصلة.":"No matching stories were found, or the database is not connected."}/></section>}
   </div>;
 }
 
