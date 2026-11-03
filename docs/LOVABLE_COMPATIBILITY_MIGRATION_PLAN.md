@@ -28,7 +28,9 @@ Exit: every upstream file is classified as port, translate, reference-only, defe
 - [x] Compare source API routes with target adapters; preserve target schema names (posts/comments/reactions/reports) because the checked-in target init migration defines them.
 - [x] Make post, comment, reaction, report and delete handlers await rate-limit decisions and distinguish 429 from limiter-unavailable 503.
 - [x] Add a shared atomic Supabase rate-limit table/function migration; not applied to any database.
-- [ ] Complete API contract tests and verify RPC behavior/concurrency in disposable staging.
+- [x] Add API contract tests for awaited limiter decisions, fail-closed behavior and migration privilege boundaries.
+- [ ] Verify RPC behavior/concurrency in disposable staging.
+- [ ] Configure and verify the trusted edge client-IP header before enabling public writes; without it, the limiter intentionally fails closed with 503.
 
 ## Phase 3 — Rate limits and security
 - [x] Ignore caller-controlled forwarded IP headers.
