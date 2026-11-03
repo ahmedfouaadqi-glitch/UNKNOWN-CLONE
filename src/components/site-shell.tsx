@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import type { Copy, Locale } from "@/lib/i18n";
 import { copy } from "@/lib/i18n";
+import { IntroTour } from "@/src/components/intro-tour";
 
 function Brand({ locale }: { locale: Locale }) {
   return (
@@ -46,13 +47,14 @@ function SiteHeader({ locale, text }: { locale: Locale; text: Copy }) {
     [prefix + "/legal", text.nav.legal]
   ];
   return <header className="site-header"><div className="site-shell">
-    <div className="header-inner">
+    <div className="header-inner" data-tour="navigation">
       <Brand locale={locale} />
       <nav className="nav-links" aria-label={locale === "ar" ? "التنقل الرئيسي" : "Main navigation"}>
         {links.map(([href, label]) => <a key={href} href={href}>{label}</a>)}
       </nav>
       <div className="header-actions">
         <ThemeLocaleControls locale={locale} />
+        <IntroTour locale={locale} />
         <button className="menu-button" type="button" aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen(value => !value)}>{open ? "×" : "☰"}</button>
       </div>
     </div>
