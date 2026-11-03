@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { getPublicSiteOrigin } from "@/lib/site-url.mjs";
 
 const publicPaths = [
   "",
@@ -19,8 +20,8 @@ export const Route = createFileRoute("/sitemap[.]xml")({
   server: {
     handlers: {
       GET: () => {
-        const base = (process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://unknown-ey4evzj9.manus.space").replace(/\/+$/, "");
-        const lastModified = new Date().toISOString();
+        const base = getPublicSiteOrigin();
+        
         const urls = ["ar", "en"].flatMap((locale) =>
           publicPaths.map((path) => {
             const priority = path === "" ? "1.0" : "0.5";
