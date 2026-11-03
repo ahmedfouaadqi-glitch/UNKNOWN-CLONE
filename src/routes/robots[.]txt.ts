@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { getPublicSiteOrigin } from "@/lib/site-url.mjs";
 
 export const Route = createFileRoute("/robots[.]txt")({
   server: {
     handlers: {
       GET: () => {
-        const base = (process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://unknown-ey4evzj9.manus.space").replace(/\/+$/, "");
+        const base = getPublicSiteOrigin();
         const body = [
           "User-agent: *",
           "Allow: /ar",
