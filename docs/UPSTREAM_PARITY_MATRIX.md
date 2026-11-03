@@ -2,7 +2,7 @@
 
 **Source commit:** 69b6f8e141419defb74ff8ce7fd0e3274c0977ef  
 **Target baseline before migration:** 848afa1c514e1a6ff462496d699959e039df2a43  
-**Target current checkpoint:** 707aa70bbfbc0a02ee55c438118a188459aaf685
+**Target current checkpoint:** 144ccc729584a658e8e355335adb066b56ec8f48
 
 Legend: **PORTED** = adapted in active TanStack app; **PARTIAL** = only selected behavior or styling is present; **PENDING** = not yet translated/verified; **REFERENCE ONLY** = source framework configuration should not become active target configuration; **REVIEW REQUIRED** = requires security/schema/hosting validation.
 
@@ -81,3 +81,10 @@ Not yet verified:
 - Added tests for trusted-IP parsing and public API rate-limit contracts.
 - Deployment prerequisite: the hosting edge must inject a trusted client-IP header (cf-connecting-ip currently); do not enable public writes until this is verified in the actual Lovable deployment environment.
 - The CI production smoke test still fails on the intentionally deferred server-only runtime import in the API request path. Build and unit-test steps were successful in prior run 41611689090; no claim of full CI success is made.
+
+
+## Public route parity update (2026-11-03)
+- Source public localized pages are routed through the TanStack localized catch-all. Verified page families include about, appeals, categories and category detail, community, contact, disclaimer, latest, legal center and country pages, moderation, post detail, privacy, report, safety, search and terms.
+- Search parity improved: normalized whitespace, allowlisted category filter, invalid-category handling, category-only search and category-preserving pagination.
+- Added `tests/search-route-contract.test.mjs`.
+- Not yet complete: page-specific content parity, detailed country legal page parity, sitemap/robots parity and SSR route smoke coverage.
