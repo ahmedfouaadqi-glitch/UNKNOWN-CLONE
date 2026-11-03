@@ -2,7 +2,7 @@
 
 **Source commit:** 69b6f8e141419defb74ff8ce7fd0e3274c0977ef  
 **Target baseline before migration:** 848afa1c514e1a6ff462496d699959e039df2a43  
-**Target current checkpoint:** 3d193f2531546bda003221825933238e80511e28
+**Target current checkpoint:** 707aa70bbfbc0a02ee55c438118a188459aaf685
 
 Legend: **PORTED** = adapted in active TanStack app; **PARTIAL** = only selected behavior or styling is present; **PENDING** = not yet translated/verified; **REFERENCE ONLY** = source framework configuration should not become active target configuration; **REVIEW REQUIRED** = requires security/schema/hosting validation.
 
@@ -27,7 +27,7 @@ Legend: **PORTED** = adapted in active TanStack app; **PARTIAL** = only selected
 | app/api/delete/route.ts | PARTIAL / REVIEW REQUIRED | Target handler now awaits shared limiter and distinguishes unavailable service; target schema names retained. Verify delete-token behavior and staging RPC. |
 | app/api/posts/[id]/comments/route.ts | PARTIAL / REVIEW REQUIRED | Awaited rate-limit decision added; uses target schema table names comments/posts from target init migration. Remaining validation/status parity and staging verification pending. |
 | app/api/posts/[id]/reactions/route.ts | PARTIAL / REVIEW REQUIRED | Awaited rate-limit decision added; uses target schema reactions table. Verify target schema and staging RPC. |
-| app/api/posts/route.ts | PARTIAL / REVIEW REQUIRED | Awaited rate-limit decision added; target schema posts retained. Remaining contract tests and staging verification pending. |
+| app/api/posts/route.ts | PARTIAL / REVIEW REQUIRED | Awaited rate-limit decision added; target schema posts retained. Contract tests added; CI and staging verification pending. |
 | app/api/reports/route.ts | PARTIAL / REVIEW REQUIRED | Awaited rate-limit decision added; target schema reports/posts/comments retained. Remaining contract tests and staging verification pending. |
 | app/admin/page.tsx | PENDING — HIGH RISK | Rebuild as TanStack route only after server-side auth design is reviewed. |
 | app/api/admin/auth/start/route.ts | PENDING — HIGH RISK | Translate OAuth flow and origin/nonce checks. |
@@ -42,7 +42,7 @@ Legend: **PORTED** = adapted in active TanStack app; **PARTIAL** = only selected
 | lib/admin-auth.ts | PENDING — HIGH RISK | Translate server-only auth/session logic; do not import Next cookies APIs. |
 | lib/totp.mjs and tests/totp.test.mjs | PENDING | Review portability and tests; integrate only with secure server implementation. |
 | supabase/migrations/20261103012035_unknown_isolated_admin.sql | REVIEW REQUIRED — NOT APPLIED | Review schema, RLS, grants, triggers, functions and rollback in a disposable staging project. |\n| supabase/migrations/20261103020000_public_rate_limits.sql | ADDED — NOT APPLIED | Adds atomic public rate-limit table/function using the target's existing legacy content tables; staging review and concurrency tests required. |
-| lib/rate-limit.ts | PARTIAL / REVIEW REQUIRED | Uses HMAC subject keys and atomic Supabase RPC; fail-closed on missing RPC/config. Migration added but not applied; server-only import issue intentionally deferred per user instruction. |
+| lib/rate-limit.ts | PARTIAL / REVIEW REQUIRED | Uses HMAC subject keys and atomic Supabase RPC; fails closed if RPC/config/trusted edge IP is missing. Shared fallback bucket removed to prevent one visitor exhausting every visitor's quota. Migration added but not applied; server-only import issue intentionally deferred per user instruction. |
 | lib/rate-limit-key.mjs and tests/rate-limit-key.test.mjs | PARTIAL | Target has related trusted-header logic; tests/build must be run against active app. |
 | lib/content.ts | REVIEW REQUIRED | Compare source table names/queries to src/lib/server-data.ts and active Supabase schema. |
 | lib/supabase-admin.ts | REVIEW REQUIRED | Source hard-coded Supabase endpoint must not be copied blindly; confirm target connection and secret handling. |
@@ -74,3 +74,10 @@ Not yet verified:
 - Production build and TypeScript checks.
 - Tour behavior in browser and keyboard/mobile accessibility.
 - API/data parity, Supabase schema/RLS, admin auth, robots/sitemap, and deployment.
+
+
+## Additional rate-limit hardening (2026-11-03)
+- Removed the shared fallback identity for missing or malformed platform client IP headers. Such requests now fail closed as limiter-unavailable rather than sharing one global quota.
+- Added tests for trusted-IP parsing and public API rate-limit contracts.
+- Deployment prerequisite: the hosting edge must inject a trusted client-IP header (cf-connecting-ip currently); do not enable public writes until this is verified in the actual Lovable deployment environment.
+- The CI production smoke test still fails on the intentionally deferred server-only runtime import in the API request path. Build and unit-test steps were successful in prior run 41611689090; no claim of full CI success is made.
