@@ -21,8 +21,8 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   const { id } = await context.params;
   if (!/^[0-9a-f-]{36}$/i.test(id)) return json({ error: "Invalid story." }, 400);
   if (!canPublish(request.headers).allowed) return json({ error: "Reactions are not enabled for this market." }, 403);
-  const rate = checkRateLimit(request, "reactions", 12, 60_000);
-  if (!rate.allowed) return json({ error: "Please slow down." }, 429);
+  const rate = await checkRateLimit(request, "reactions", 12, 60_000);
+  if (!rate.allowed) return json({ error: rate.reason === "rate_limited" ? "Please slow down." : "Reaction rate limiting is temporarily unavailable." }, rate.reason === "rate_limited" ? 429 : 503);
   const input = parseJson(await request.json().catch(() => null));
   if (!input || typeof input.reaction !== "string" || !allowed.has(input.reaction) || typeof input.visitorToken !== "string" || input.visitorToken.length < 20 || input.visitorToken.length > 100) {
     return json({ error: "Invalid reaction." }, 400);
