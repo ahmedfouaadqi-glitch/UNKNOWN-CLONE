@@ -34,6 +34,7 @@ test("admin auth requires configured signing, email allowlist, trusted origin an
 
 test("admin MFA and moderation handlers use atomic database controls and audited decisions", async () => {
   const api = await read("lib/admin-api.server.ts");
+  assert.match(api, /parsedApiBase\.protocol !== "https:"/);
   assert.match(api, /unknown_admin_check_mfa_limit/);
   assert.match(api, /unknown_admin_reset_mfa_limit/);
   assert.match(api, /verifyTotp\(/);
