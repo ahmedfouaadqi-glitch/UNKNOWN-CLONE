@@ -27,6 +27,8 @@ export async function checkRateLimit(
   }
 
   const address = getTrustedRateLimitAddress(request.headers);
+  if (!address) return { allowed: false, reason: "rate_limit_unavailable" };
+
   const subjectHash = createHmac("sha256", secret)
     .update(`unknown-rate-v1:${scope}:${address}`)
     .digest("hex");
