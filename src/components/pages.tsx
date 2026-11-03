@@ -111,10 +111,19 @@ function CategoryIndex({ locale }: { locale: Locale }) {
   return <div className="site-shell inner-page"><PageHeading locale={locale} title={ar?"التصنيفات":"Categories"} intro={ar?"اختر الشعور أو نوع الحكاية التي تريد قراءتها.":"Choose a feeling or the kind of story you want to explore."}/><section className="section"><CategoryCards locale={locale}/></section></div>;
 }
 
-function SearchPage({ locale, query, posts }: { locale: Locale; query: string; posts: PostsData }) {
+function SearchPage({ locale, query, posts, category = "", invalidCategory = false }: { locale: Locale; query: string; posts: PostsData; category?: string; invalidCategory?: boolean }) {
   const ar=locale==="ar";
   return <div className="site-shell inner-page"><PageHeading locale={locale} title={ar?"البحث في الحكايات":"Search stories"} intro={ar?"ابحث في المشاركات العامة المحفوظة.":"Search published public stories."}/>
-    <form className="search-form" method="get" action={"/"+locale+"/search"}><input className="text-input" name="q" defaultValue={query} minLength={2} maxLength={80} placeholder={ar?"اكتب كلمة أو عبارة...":"Enter a word or phrase..."}/><button className="primary-button" type="submit">{ar?"بحث":"Search"}</button></form>
+    <form className="search-form" method="get" action={"/"+locale+"/search"} role="search">
+      <input className="text-input" type="search" name="q" defaultValue={query} minLength={2} maxLength={80} placeholder={ar?"اكتب كلمة أو عبارة...":"Enter a word or phrase..."}/>
+      <select className="select-input search-category" name="category" defaultValue={category} aria-label={ar?"تصفية حسب التصنيف":"Filter by category"}>
+        <option value="">{ar?"كل التصنيفات":"All categories"}</option>
+        {categories.map(item=><option key={item.id} value={item.id}>{item[locale]}</option>)}
+      </select>
+      <button className="primary-button" type="submit">{ar?"بحث":"Search"}</button>
+    </form>
+    {invalidCategory && <div className="empty-state">{ar?"التصنيف المحدد غير صالح. اختر تصنيفاً من القائمة.":"The selected category is invalid. Choose a category from the list."}</div>}
+    {query.length === 1 && <div className="empty-state">{ar?"استخدم حرفين على الأقل للبحث.":"Use at least two characters to search."}</div>}
     {query&&<section className="section"><div className="section-heading"><h2 className="section-title">{ar?"نتائج البحث":"Search results"}</h2><span className="writer-note">{posts?.total||0} {ar?"نتيجة":"results"}</span></div><PostList posts={posts?.posts||[]} locale={locale} emptyText={ar?"لم نعثر على مشاركات مطابقة أو أن قاعدة البيانات غير متصلة.":"No matching stories were found, or the database is not connected."}/></section>}
   </div>;
 }
@@ -161,7 +170,7 @@ function UtilityPage({ locale, slug }: { locale: Locale; slug: string }) {
   return <div className="site-shell inner-page"><PageHeading locale={locale} title={ar?item.arTitle:item.enTitle} intro={ar?item.arIntro:item.enIntro}/><article className="document-content"><section className="document-section"><h2>{ar?"معلومات مهمة":"Important information"}</h2>{(ar?item.arBody:item.enBody).map((p,i)=><p key={i}>{p}</p>)}</section></article></div>;
 }
 
-export function ContentPage({ locale, path, posts, post, query }: { locale: Locale; path: string; posts: PostsData; post: PublicPost|null; query: string }) {
+export function ContentPage({ locale, path, posts, post, query, category, invalidCategory }: { locale: Locale; path: string; posts: PostsData; post: PublicPost|null; query: string; category?: string; invalidCategory?: boolean }) {
   const parts=path.split("/").filter(Boolean);
   const first=parts[0]||"";
   const second=parts[1]||"";
@@ -169,7 +178,7 @@ export function ContentPage({ locale, path, posts, post, query }: { locale: Loca
   if(first==="latest")return <ListingPage locale={locale} title={ar?"أحدث المشاركات":"Latest stories"} intro={ar?"المشاركات العامة المحفوظة في الخدمة.":"Public stories currently stored in the service."} result={posts}/>;
   if(first==="categories"&&!second)return <CategoryIndex locale={locale}/>;
   if(first==="categories"&&second){const category=categories.find(item=>item.id===second);return <ListingPage locale={locale} title={category?category[locale]:(ar?"تصنيف غير معروف":"Unknown category")} intro={ar?"الحكايات المنشورة ضمن هذا التصنيف.":"Published stories in this category."} result={posts}/>;}
-  if(first==="search")return <SearchPage locale={locale} query={query} posts={posts}/>;
+  if(first==="search")return <SearchPage locale={locale} query={query} posts={posts} category={category} invalidCategory={invalidCategory}/>;
   if(first==="p"&&second)return <StoryPage locale={locale} post={post}/>;
   if(first==="legal")return <LegalIndex locale={locale} countryCode={second}/>;
   if(first==="contact")return <ContactPage locale={locale}/>;
