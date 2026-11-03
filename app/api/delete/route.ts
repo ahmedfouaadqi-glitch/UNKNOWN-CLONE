@@ -6,8 +6,8 @@ import { json, parseJson } from "@/lib/http";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  const rate = checkRateLimit(request, "delete", 6, 60 * 60_000);
-  if (!rate.allowed) return json({ error: "Too many requests." }, 429);
+  const rate = await checkRateLimit(request, "delete", 6, 60 * 60_000);
+  if (!rate.allowed) return json({ error: rate.reason === "rate_limited" ? "Too many requests." : "Deletion rate limiting is temporarily unavailable." }, rate.reason === "rate_limited" ? 429 : 503);
   const input = parseJson(await request.json().catch(() => null));
   if (!input || (input.type !== "post" && input.type !== "comment") ||
       typeof input.id !== "string" || !/^[0-9a-f-]{36}$/i.test(input.id) ||
