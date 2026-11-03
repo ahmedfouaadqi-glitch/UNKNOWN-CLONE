@@ -96,3 +96,13 @@ Not yet verified:
 - Canonical host uses validated `SITE_URL` (or `NEXT_PUBLIC_SITE_URL` compatibility fallback); invalid values fall back to the upstream default.
 - Added `tests/seo-routes-contract.test.mjs` and `tests/site-url.test.mjs`.
 - Deployment verification and canonical domain configuration remain pending.
+
+
+## Admin console parity update (2026-11-03)
+- Implemented explicit TanStack `/admin` page and ported moderation UI.
+- Added server-side route handlers for OAuth start/callback, session, logout, MFA setup/verify and moderation queue GET/POST.
+- Authentication keeps the upstream two-step model: configured admin email allowlist + OAuth identity + TOTP. Admin sessions are signed, eight-hour, stored by SHA-256 session hash, checked against active DB session and revoked on logout.
+- TOTP secrets use AES-256-GCM encryption; MFA verification checks atomic DB rate limits and rejects previously accepted TOTP counters; successful events are written to the admin audit table.
+- Moderation supports dismiss report, remove reported content, and reject pending post/comment. No publish action is exposed.
+- Security and route contracts added at `tests/admin-migration-contract.test.mjs`.
+- **Not production-ready yet:** Supabase admin migration remains unapplied; deployment secrets/origin allowlist and OAuth callback URL need configuration; CI is pending; staging verification required.
