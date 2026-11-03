@@ -19,13 +19,14 @@ export type ContentPageProps = {
   targetId?: string;
 };
 
-function Pagination({ locale, path, query, result }: { locale: Locale; path: string; query: string; result: PostsPageResult }) {
+function Pagination({ locale, path, query, category, result }: { locale: Locale; path: string; query: string; category?: string; result: PostsPageResult }) {
   if (result.totalPages < 2) return null;
   const basePath = "/" + locale + "/" + path;
   function href(page: number) {
     const params = new URLSearchParams();
     params.set("page", String(page));
     if (query) params.set("q", query);
+    if (category) params.set("category", category);
     return basePath + "?" + params.toString();
   }
   const ar = locale === "ar";
@@ -50,7 +51,7 @@ export function ContentPageWithInteractions(props: ContentPageProps) {
   return <>
     <ContentPage {...props} />
     {posts && <div className="site-shell" style={{ paddingBottom: 32 }}>
-      <Pagination locale={locale} path={path} query={query} result={posts} />
+      <Pagination locale={locale} path={path} query={query} category={props.category} result={posts} />
     </div>}
     {isStory && post && <div className="site-shell" style={{ maxWidth: 880 }}>
       <Reactions postId={post.id} locale={locale} enabled={features.publishingReady} />
